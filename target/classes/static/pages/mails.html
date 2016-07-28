@@ -2,11 +2,13 @@
 	<h1>Emails</h1>
 	<table>
 		<tr>
+			<td/>
 			<td>ID</td>
 			<td>Subject</td>
 			<td>Text</td>
 		</tr>
 		<tr ng-repeat="email in emails">
+			<td><button ng-click="deleteEmail( $index )">delete</button></td>
 			<td><a ng-href="/#/mail/{{ email.id }}">{{ email.id }}</a></td>
 			<td><a ng-href="/#/mail/{{ email.id }}">{{ email.subject }}</a></td>
 			<td>{{ email.emailStr | limitTo: 80 }}{{ email.emailStr.length > 80 ? '...' : '' }}</td>

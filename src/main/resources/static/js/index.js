@@ -17,14 +17,31 @@ bootSmtp.config(function($routeProvider) {
 });
 
 bootSmtp.controller('emailsController', function EmailController($scope, $http) {
-	$http({
-		method: 'GET',
-		url: '/mail'
-	}).then(function successCallback(response) {
-		$scope.emails = response.data;
-	}, function errorCallback(response) {
 
-	});
+	$scope.getAllEmail = function() {
+		$http({
+			method: 'GET',
+			url: '/mail'
+		}).then(function successCallback(response) {
+			$scope.emails = response.data;
+		}, function errorCallback(response) {
+
+		});
+	};
+
+	$scope.deleteEmail = function(index) {
+		var emailId = $scope.emails[index].id;
+		$http({
+			method: 'DELETE',
+			url: '/mail/' + emailId
+		}).then(function successCallback(response) {
+			$scope.getAllEmail();
+		}, function errorCallback(response) {
+
+		});
+	};
+
+	$scope.getAllEmail();
 });
 
 bootSmtp.controller('emailController', function EmailController($scope, $http, $routeParams) {

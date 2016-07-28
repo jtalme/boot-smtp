@@ -42,7 +42,7 @@ public class MailController {
 	}
 
 	/**
-	 * Returns all in-memory emails
+	 * Returns email identified by provided id
 	 * @return
 	 */
 	@RequestMapping(
@@ -62,7 +62,19 @@ public class MailController {
 		method = RequestMethod.DELETE
 	)
 	@ResponseBody
-	public void deleteMail() {
+	public void deleteMails() {
 		emailRepository.deleteAll();
+	}
+
+	/**
+	 * Deletes all in-memory and file based emails
+	 */
+	@RequestMapping(
+		path = "/mail/{id}",
+		method = RequestMethod.DELETE
+	)
+	@ResponseBody
+	public void deleteMail(@PathVariable long id) {
+		emailRepository.delete(id);
 	}
 }
