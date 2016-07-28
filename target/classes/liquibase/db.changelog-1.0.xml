@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<changeSet author="tallstak" id="Create Email table">
+		<createTable tableName="EMAIL">
+			<column name="id" type="BIGINT" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="date_received" type="VARCHAR(255)"/>
+			<column name="who_from" type="VARCHAR(255)"/>
+			<column name="to" type="datetime"/>
+			<column name="subject" type="VARCHAR(255)"/>
+			<column name="email_str" type="CLOB"/>
+		</createTable>
+	</changeSet>
+
+</databaseChangeLog>

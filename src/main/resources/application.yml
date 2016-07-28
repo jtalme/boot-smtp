@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: boot smtp
+  datasource:
+    url: 'jdbc:h2:mem:bootsmtp;DB_CLOSE_ON_EXIT=FALSE'
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+server:
+  port: 8000
+
+application:
+  title: Boot SMTP Server
+  port: 2525
+  bindAddress:
+  relayDomains:
+
+liquibase:
+  change-log: classpath:/liquibase/db.changelog-master.xml
+
