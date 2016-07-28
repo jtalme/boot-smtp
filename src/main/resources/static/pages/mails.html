@@ -7,9 +7,9 @@
 			<td>Text</td>
 		</tr>
 		<tr ng-repeat="email in emails">
-			<td>{{email.id}}</td>
-			<td>{{email.subject}}</td>
-			<td>{{ email.emailStr | limitTo: 20 }}{{email.emailStr.length > 20 ? '...' : ''}}</td>
+			<td>{{ email.id }}</td>
+			<td>{{ email.subject }}</td>
+			<td>{{ email.emailStr | limitTo: 20 }}{{ email.emailStr.length > 20 ? '...' : '' }}</td>
 		</tr>
 	</table>
 </div>
