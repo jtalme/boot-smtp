@@ -7,4 +7,5 @@ com/tallstak/bootsmtp/server/EmailRepository.class
 com/tallstak/bootsmtp/server/MailSaver.class
 com/tallstak/bootsmtp/server/MailController.class
 com/tallstak/bootsmtp/server/SMTPAuthHandler.class
+com/tallstak/bootsmtp/server/TemplateController.class
 com/tallstak/bootsmtp/server/SMTPAuthHandlerFactory.class

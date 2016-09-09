@@ -23,11 +23,6 @@ public class MailController {
 		this.emailRepository = emailRepository;
 	}
 
-//	@RequestMapping("/")
-//	public String root() {
-//		return "redirect:mail";
-//	}
-
 	/**
 	 * Returns all in-memory emails
 	 * @return
