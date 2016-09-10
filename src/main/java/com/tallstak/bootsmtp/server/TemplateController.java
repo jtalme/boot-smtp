@@ -11,11 +11,6 @@ public class TemplateController {
 		return "redirect:inbox";
 	}
 
-	@RequestMapping("/foo")
-	public String inbox() {
-		return "inbox";
-	}
-
 	@RequestMapping("/inbox")
 	public String inboxTemplate() {
 		return "inbox";
