@@ -1,20 +1,19 @@
 package com.tallstak.bootsmtp.server;
 
 import com.tallstak.bootsmtp.ApplicationConfiguration;
+
+import javax.mail.*;
+import javax.mail.internet.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +25,7 @@ public final class MailSaver {
 
 	private ApplicationConfiguration appConfig;
 	private EmailRepository emailRepository;
+	private Session session;
 
 	@Autowired
 	public MailSaver(ApplicationConfiguration applicationConfiguration, EmailRepository emailRepository) {
@@ -34,7 +34,7 @@ public final class MailSaver {
 	}
 
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MailSaver.class);
+	private static final Logger log = LoggerFactory.getLogger(MailSaver.class);
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	// This can be a static variable since it is Thread Safe
 	private static final Pattern SUBJECT_PATTERN = Pattern.compile("^Subject: (.*)$");
@@ -48,31 +48,38 @@ public final class MailSaver {
 	 * @param to the recipient of the email.
 	 * @param data an InputStream object containing the email.
 	 */
-	public void saveEmail(String from, String to, InputStream data) {
-		if (!StringUtils.isEmpty(appConfig.getRelayDomains())) {
-			boolean matches = false;
-			for (String domain : appConfig.getRelayDomains().split(",")) {
-				if (to.endsWith(domain)) {
-					matches = true;
-					break;
+	public void saveEmail(InputStream data) throws IOException {
+		try {
+			MimeMessage message = new MimeMessage(null, data);
+
+			Email email = new Email();
+			email.setEmailStr(message.toString());
+
+			String receivedDateString = message.getReceivedDate() != null ? message.getReceivedDate().toString() : "";
+			email.setDateReceived(receivedDateString);
+
+			email.setSubject(message.getSubject());
+			email.setTo(message.getReplyTo()[0].toString());
+			email.setWhoFrom(message.getFrom()[0].toString());
+
+			String messageString = "";
+			if (message.getContent() instanceof MimeMultipart) {
+				MimeMultipart messageContent = (MimeMultipart) message.getContent();
+				for (int i = 0; i < messageContent.getCount(); i++) {
+					BodyPart nextBodyPart = messageContent.getBodyPart(i);
+					InputStream bpInputStream = nextBodyPart.getInputStream();
+					Scanner s = new java.util.Scanner(bpInputStream).useDelimiter("\\A");
+					while (s.hasNext()) {
+						messageString += s.next();
+					}
 				}
 			}
+			email.setEmailStr(messageString);
 
-			if (!matches) {
-				LOGGER.debug("Destination {} doesn't match relay domains", to);
-				return;
-			}
+			emailRepository.save(email);
+		} catch (MessagingException e) {
+			log.warn(e.toString());
 		}
-
-		Email model = new Email();
-		model.setDateReceived(dateFormat.format(new Date()));
-		model.setWhoFrom(from);
-		model.setTo(to);
-		String mailContent = convertStreamToString(data);
-		model.setSubject(getSubjectFromStr(mailContent));
-		model.setEmailStr(mailContent);
-
-		emailRepository.save(model);
 	}
 
 	/**
@@ -99,7 +106,7 @@ public final class MailSaver {
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.error("", e);
+			log.error("", e);
 		}
 		return sb.toString();
 	}
@@ -122,8 +129,13 @@ public final class MailSaver {
 				 }
 			}
 		} catch (IOException e) {
-			LOGGER.error("", e);
+			log.error("", e);
 		}
 		return "";
+	}
+
+	private String getContentFromStr(String data) {
+		String content = null;
+		return content;
 	}
 }

@@ -17,62 +17,6 @@
 
 		var req = new XMLHttpRequest();
 		req.open('GET', '/mail');
-		req.addEventListener('load', function (ev) {
-			if (ev.currentTarget.status != 200) {
-				window.alert(JSON.stringify(JSON.parse(ev.currentTarget.response), null, 4));
-				window.history.back();
-				return;
-			}
-			var resp = JSON.parse(ev.currentTarget.response);
-
-			resp.forEach(function (item) {
-				var tr = document.createElement('tr');
-
-				['id', 'subject', 'emailStr'].forEach(function (key) {
-					var td = document.createElement('td');
-					switch (key) {
-						case 'emailStr':
-							console.log(item[key]);
-							break;
-						case 'id':
-							tr.id = item[key];
-						default:
-							td.innerText = item[key];
-							break;
-					}
-					tr.appendChild(td);
-				});
-
-				el.appendChild(tr);
-			});
-		});
-		req.send();
-	}
-
-</script>
-
-<h1>Emails</h1>
-
-<button class="btn btn-default" style="margin-top:1em; margin-left:1em" onclick="refresh()">Refresh</button>
-
-<table class="table table-striped table-condensed">
-	<thead>
-		<tr>
-			<td>ID</td>
-			<td>Subject</td>
-			<td>Text</td>
-		</tr>
-	</thead>
-	<tbody id="emails"/>
-</table>
-
-<script>
-	function refresh() {
-		var el = document.getElementById('emails');
-		el.innerHTML = '';
-
-		var req = new XMLHttpRequest();
-		req.open('GET', '/mail');
 		req.setRequestHeader('accept', 'application/json');
 		req.addEventListener('load', function (ev) {
 			if (ev.currentTarget.status != 200) {
@@ -84,8 +28,17 @@
 
 			resp.forEach(function (item) {
 				var tr = document.createElement('tr');
+				tr.name = item['id'];
 
-				['id', 'subject', 'emailStr'].forEach(function (key) {
+				var td = document.createElement('td');
+				tr.appendChild(td);
+				var checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.className = 'checkbox';
+				td.appendChild(checkbox);
+
+				// populate the row with data from the email
+				['subject', 'emailStr'].forEach(function (key) {
 					var td = document.createElement('td');
 					switch (key) {
 						default:
@@ -95,34 +48,42 @@
 					tr.appendChild(td);
 				});
 
-//				var buttontd = document.createElement('td');
-//
-//				var deleteButton = document.createElement('button');
-//				deleteButton.name = item['restName'];
-//				deleteButton.innerText = 'Delete';
-//				deleteButton.className = 'btn btn-default';
-//				deleteButton.style = 'margin-top:0.5em;margin-right:0.5em;';
-//				deleteButton.onclick = function deleteSp() {
-//					var req = new XMLHttpRequest();
-//					req.open('DELETE', '/rest/v1/serviceProvider/' + encodeURIComponent(this.name));
-//					req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-//					req.addEventListener('load', function (ev) {
-//						if (ev.currentTarget.response) {
-//							console.error(ev.currentTarget.response);
-//							window.alert(ev.currentTarget.response);
-//						}
-//						refresh();
-//					});
-//					req.send();
-//				};
-//				buttontd.appendChild(deleteButton);
-//				tr.appendChild(buttontd);
-
 				el.appendChild(tr);
 			});
 		});
 		req.send();
 	}
+
+	// delete the emails whose checkbox is selected
+	function deleteEmails() {
+		var table = document.getElementById("emails");
+		for (var i = 0, row; row = table.rows[i]; i++) {
+			var checkbox = row.getElementsByClassName('checkbox');
+			if (checkbox[0].checked == true) {
+				var id = row.name;
+				var req = new XMLHttpRequest();
+				req.open('DELETE', '/mail/' + encodeURIComponent(id));
+				req.setRequestHeader('accept', 'application/json');
+				req.addEventListener('load', function (ev) {
+					refresh(); //TODO: only call this after the last delete returns
+					});
+				req.send();
+			}
+		}
+	}
+</script>
+
+<h1>Emails</h1>
+
+<button class="btn btn-default" style="margin-top:1em; margin-left:1em" onclick="refresh()">Refresh</button>
+
+<button class="btn btn-default" style="margin-top:1em; margin-left:1em" onclick="deleteEmails()">Delete</button>
+
+<table class="table table-striped table-condensed" style="margin-top: 20px;">
+	<tbody id="emails"/>
+</table>
+
+<script>
 	refresh();
 </script>
 

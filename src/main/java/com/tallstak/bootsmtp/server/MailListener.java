@@ -39,6 +39,6 @@ public final class MailListener implements SimpleMessageListener {
      */
 	@Override
 	public void deliver(String from, String recipient, InputStream data) throws IOException {
-		saver.saveEmail(from, recipient, data);
+		saver.saveEmail(data);
 	}
 }
