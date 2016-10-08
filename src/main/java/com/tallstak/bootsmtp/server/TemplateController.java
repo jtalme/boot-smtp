@@ -15,4 +15,9 @@ public class TemplateController {
 	public String inboxTemplate() {
 		return "inbox";
 	}
+
+	@RequestMapping("/inbox/{id}")
+	public String singleMailTemplate() {
+		return "singleMail";
+	}
 }

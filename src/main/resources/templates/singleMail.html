@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<title>Inbox</title>
+	<link rel="stylesheet" type="text/css" href="/css/reset.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/styles.css"/>
+	<link href="../../css/bootstrap.css" rel="stylesheet" media="screen"/>
+</head>
+
+<body id="body">
+
+<script>
+	function loadPage() {
+		var from = document.getElementById('from');
+		var to = document.getElementById('to');
+		var dateReceived = document.getElementById('dateReceived');
+		var content = document.getElementById('content');
+
+		var req = new XMLHttpRequest();
+		var id = window.location.pathname.split('/')[2];
+		req.open('GET', '/mail/' + id);
+		req.setRequestHeader('accept', 'application/json');
+		req.addEventListener('load', function (ev) {
+			if (ev.currentTarget.status != 200) {
+				window.alert(JSON.stringify(JSON.parse(ev.currentTarget.response), null, 4));
+				window.history.back();
+				return;
+			}
+			var resp = JSON.parse(ev.currentTarget.response);
+
+			from.innerText = 'From: ' + resp['from'];
+			to.innerText = 'To: ' + resp['to'];
+			dateReceived.innerText = 'Date: ' + resp['to'];
+			content.innerText = resp['content'];
+		});
+		req.send();
+	}
+</script>
+
+<div id="from"/>
+<div id="to"/>
+<div id="dateReceived"/>
+<div id="content"/>
+
+
+<script>
+	loadPage();
+</script>
+
+</body>
+</html>

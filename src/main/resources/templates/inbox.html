@@ -43,7 +43,10 @@
 					var td = document.createElement('td');
 					switch (key) {
 						default:
-							td.innerText = item[key];
+							var a = document.createElement('a');
+							a.href = '/inbox/' + item['id'];
+							a.innerText = item[key];
+							td.appendChild(a);
 							break;
 					}
 					tr.appendChild(td);
